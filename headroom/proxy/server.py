@@ -135,14 +135,12 @@ from headroom.proxy.helpers import (
     EAGER_PRELOAD_TIMEOUT_SECONDS,
     MAX_COMPRESSION_CACHE_SESSIONS,  # noqa: F401
     MAX_MESSAGE_ARRAY_LENGTH,  # noqa: F401
-    MAX_REQUEST_BODY_SIZE,
+    MAX_REQUEST_BODY_SIZE,  # noqa: F401
     MAX_SSE_BUFFER_SIZE,  # noqa: F401
     RETRYABLE_OVERLOAD_STATUSES,
-    RequestBodyTooLarge,
     _get_image_compressor,  # noqa: F401
     _read_request_json,  # noqa: F401
     _setup_file_logging,  # noqa: F401
-    get_body_too_large_status,
     is_anthropic_auth,  # noqa: F401
     jitter_delay_ms,
     resolve_display_provider,
