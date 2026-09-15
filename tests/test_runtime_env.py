@@ -273,9 +273,7 @@ def test_admin_runtime_env_is_loopback_only():
 
 def test_admin_runtime_env_rejects_oversized_body(loopback_client, monkeypatch):
     monkeypatch.setattr(proxy_helpers, "MAX_REQUEST_BODY_SIZE", 128)
-    resp = loopback_client.post(
-        "/admin/runtime-env", json={"HEADROOM_OUTPUT_SHAPER": "x" * 1000}
-    )
+    resp = loopback_client.post("/admin/runtime-env", json={"HEADROOM_OUTPUT_SHAPER": "x" * 1000})
     assert resp.status_code == 413
     assert rt.getenv("HEADROOM_OUTPUT_SHAPER") is None  # rejected before applying
 

@@ -73,7 +73,9 @@ def _deflate_bomb(total: int = BOMB_PLAIN_SIZE) -> bytes:
 class _Request:
     """Minimal stand-in for the Starlette Request the reader actually takes."""
 
-    def __init__(self, body: bytes, content_encoding: str = "", headers: dict | None = None) -> None:
+    def __init__(
+        self, body: bytes, content_encoding: str = "", headers: dict | None = None
+    ) -> None:
         self._body = body
         self.headers = {"content-encoding": content_encoding, **(headers or {})}
 
@@ -348,9 +350,7 @@ async def test_reader_honors_a_truthful_content_length_before_reading(
     passes if the Content-Length check runs (and rejects) before the body is
     ever read.
     """
-    request = _NeverStreamedRequest(
-        b"", "", headers={"content-length": str(small_raw_cap + 1)}
-    )
+    request = _NeverStreamedRequest(b"", "", headers={"content-length": str(small_raw_cap + 1)})
     with pytest.raises(_helpers().RequestBodyTooLarge):
         await _helpers()._read_request_body_bytes(request)
 
