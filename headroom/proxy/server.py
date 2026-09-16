@@ -1920,7 +1920,7 @@ class HeadroomProxy(
                     _dedupe = bool(getattr(_t, "_cross_turn_dedup_enabled", False))
                     break
             logger.info(
-                "Savings profile: %s (effective: min_ntoks=%s min_chars_block=%s "
+                "Savings profile: %s (effective: min_tokens=%s min_chars_block=%s "
                 "compress_user=%s dedupe=%s tool_search=%s)",
                 self.config.savings_profile or DEFAULT_PROFILE,
                 _eff.get("min_tokens_to_compress", "default"),
@@ -3863,18 +3863,16 @@ def create_app(config: ProxyConfig | None = None) -> FastAPI:
         the resulting live config. Last writer wins in a single-worker proxy;
         multi-worker proxies reject the update because overrides are process-local.
         """
-        content_length = request.headers.get("content-length")
+        body_bytes = bytearray()
+        async for chunk in request.stream():
+            body_bytes.extend(chunk)
+            if len(body_bytes) > _MAX_RUNTIME_ENV_BODY_BYTES:
+                return JSONResponse(
+                    status_code=413,
+                    content={"error": "request body too large"},
+                )
         try:
-            content_length_value = int(content_length) if content_length is not None else None
-        except ValueError:
-            content_length_value = None
-        if content_length_value is None or content_length_value > _MAX_RUNTIME_ENV_BODY_BYTES:
-            return JSONResponse(
-                status_code=413,
-                content={"error": "request body too large"},
-            )
-        try:
-            body = await request.json()
+            body = json.loads(bytes(body_bytes))
         except (ValueError, UnicodeDecodeError):
             body = None
         if not isinstance(body, dict):
